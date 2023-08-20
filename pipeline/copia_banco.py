@@ -1,10 +1,10 @@
 import psycopg2
 
 # Parâmetros de conexão
-dbname = 'dbgfopag'
-user = 'gfopag'
-password = 'gfopag#123'
-host = 'gfopag.ctruxpmyw7jm.us-east-2.rds.amazonaws.com'  # Endereço do seu banco na AWS
+dbname = 'nome_banco'
+user = 'usuario'
+password = 'senha'
+host = 'host'  
 port = '5432'  # Porta padrão do PostgreSQL
 
 # Conectando ao banco de dados
