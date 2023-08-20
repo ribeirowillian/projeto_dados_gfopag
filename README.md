@@ -6,8 +6,11 @@
 
 ### Modelo Conceitual
 ![conceitual](https://github.com/will-rds/projeto_dados_gfopag/blob/main/imagens/modelo_conceitual.PNG)
-### Modelo Lógico
-
+### Modelos Lógicos
+#### Relacional
+![relacional](https://github.com/will-rds/projeto_dados_gfopag/blob/main/imagens/modeloER_relacional.pgerd.png)
+#### Data Warehouse
+![datawarehouse](https://github.com/will-rds/projeto_dados_gfopag/blob/main/imagens/modeloER_datawarehouse.pgerd.png)
 ### Tecnologias utilizadas
 #### Ferramentas
 * Jupyter Notebook
