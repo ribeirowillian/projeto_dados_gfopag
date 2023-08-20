@@ -2,8 +2,10 @@
 
 ### Mapeamento do projeto
 
-* Ao avaliar as necessidades da empresa, ficou claro que era necessário automatizar a maneira como os relatórios de fechamanto e faturamento eram produzidos. Isso levou à identificação dos requisitos essenciais para o projeto, resultando na criação de dois bancos de dados interligados e de uma aplicação web que recebe as informações inseridas pelos usuários.
+Ao avaliar as necessidades da empresa, ficou claro que era necessário automatizar a maneira como os relatórios de fechamanto e faturamento eram produzidos. Isso levou à identificação dos requisitos essenciais para o projeto, resultando na criação de dois bancos de dados interligados e de uma aplicação web que recebe as informações inseridas pelos usuários.
 
+#### Passo a Passo
+Neste link, vou deixar um arquivo onde você pode encontrar o passo-a-passo de como executar o projeto.
 ### Modelo Conceitual
 ![conceitual](https://github.com/will-rds/projeto_dados_gfopag/blob/main/imagens/modelo_conceitual.PNG)
 ### Modelos Lógicos
