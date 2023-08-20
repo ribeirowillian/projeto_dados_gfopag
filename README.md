@@ -28,4 +28,4 @@ Neste link, vou deixar um arquivo onde você pode encontrar o passo-a-passo de c
 #### Autor
 Willian Ribeiro dos Santos
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/willian-ribeiro-7b02b7141/) 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/willianrsantos/)
