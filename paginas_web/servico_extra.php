@@ -63,10 +63,13 @@
                 background-color: #0056b3;
             }
             .empresa-column {
-                float: left;
-                width: 50%;
-                padding: 10px;
+            /* Remova a flutuação e ajuste a largura */
+            width: calc(50% - 20px); /* Leva em conta o padding de 10px em ambos os lados */
+            display: inline-block; /* Usa inline-block em vez de float */
+            padding: 10px;
+            box-sizing: border-box; /* Inclui padding na largura total */
             }
+
             .button-container {
                 text-align: center;
                 margin-top: 20px;
@@ -80,148 +83,101 @@
     </head>
     <body>
 <?php
-    require_once 'config.php';
+require_once 'config.php';
 
-    function connect_to_database() {
-        global $db_config;
+function connect_to_database() {
+    global $db_config;
 
-        $dsn = "pgsql:host={$db_config['host']};port={$db_config['port']};dbname={$db_config['dbname']};user={$db_config['user']};password={$db_config['password']}";
+    $dsn = "pgsql:host={$db_config['host']};port={$db_config['port']};dbname={$db_config['dbname']};user={$db_config['user']};password={$db_config['password']}";
 
-        try {
-            $pdo = new PDO($dsn);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $pdo;
-        } catch (PDOException $e) {
-            die("Erro de conexão: " . $e->getMessage());
-        }
-    }
-
-    $pdo = connect_to_database();
-
-    // Buscar clientes
     try {
-        $sql_clientes = "SELECT id_cliente, nome FROM relacional.cliente";
-        $stmt_clientes = $pdo->query($sql_clientes);
-        $clientes = $stmt_clientes->fetchAll(PDO::FETCH_ASSOC);
+        $pdo = new PDO($dsn);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $pdo;
     } catch (PDOException $e) {
-        die("Erro ao executar consulta SQL: " . $e->getMessage());
+        die("Erro de conexão: " . $e->getMessage());
     }
+}
 
-    if (isset($_POST['submit_cliente'])) {
-        $cliente_selecionado = $_POST['cliente_selecionado'];
-        // Buscar empresas do cliente selecionado
-        try {
-            $sql_empresas_servicos = "SELECT e.id_empresa, e.nome AS nome_empresa 
-                FROM relacional.empresa e
-                WHERE e.id_cliente = ?";
-            $stmt_empresas_servicos = $pdo->prepare($sql_empresas_servicos);
-            $stmt_empresas_servicos->execute([$cliente_selecionado]);
-            $empresas_servicos = $stmt_empresas_servicos->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            die("Erro ao executar consulta SQL: " . $e->getMessage());
-        }
+$pdo = connect_to_database();
 
-        // Buscar serviços extras disponíveis
-        try {
-            $sql_servicos = "SELECT column_name FROM information_schema.columns WHERE table_name = 'servico_extra' AND column_name NOT IN ('cod_serv_extra', 'id_empresa', 'id_data')";
-            $stmt_servicos = $pdo->query($sql_servicos);
-            $servicos = $stmt_servicos->fetchAll(PDO::FETCH_COLUMN);
-        } catch (PDOException $e) {
-            die("Erro ao executar consulta SQL: " . $e->getMessage());
-        }
-    }
+$clientes = $pdo->query("SELECT id_cliente, nome FROM relacional.cliente")->fetchAll(PDO::FETCH_ASSOC);
 
-    // Buscar datas disponíveis
-    try {
-        $sql_datas = "SELECT id, mes, ano FROM relacional.datas";
-        $stmt_datas = $pdo->query($sql_datas);
-        $datas = $stmt_datas->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        die("Erro ao executar consulta SQL: " . $e->getMessage());
-    }
-    ?>
-    </style>
-            <div class="page-container">
-            <h1 class="title">SERVIÇOS EXTRAS</h1>
+$empresas_servicos = [];
+$servicos = [];
 
-            <div class="form-container">
-                <form method="post" action="">
-                    <label for="cliente">Selecione o Cliente:</label>
-                    <select id="cliente" name="cliente_selecionado">
-                        <?php
-                        foreach ($clientes as $cliente) {
-                            echo "<option value='{$cliente['id_cliente']}'>{$cliente['nome']}</option>";
-                        }
-                        ?>
-                    </select>
-                    <button class="submit-button" type="submit" name="submit_cliente">Selecionar</button>
-                </form>
-                <?php if (isset($empresas_servicos)): ?>
-                    <form method="post" action="inserir_dados_extras.php">
-                        <div class="empresa-column">
-                            <?php $halfCount = ceil(count($empresas_servicos) / 2); ?>
-                            <?php for ($i = 0; $i < $halfCount; $i++): ?>
-                                <?php $empresa = $empresas_servicos[$i]; ?>
-                                <h2 class="empresa-name">Empresa: <?php echo $empresa['nome_empresa']; ?></h2>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Serviço Extra</th>
-                                            <th>Valor</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($servicos as $servico): ?>
-                                            <tr>
-                                                <td><?php echo $servico; ?></td>
-                                                <td>
-                                                    <input type="text" name="valores[<?php echo $empresa['id_empresa']; ?>][<?php echo $servico; ?>]" placeholder="Valor">
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endfor; ?>
-                        </div>
-                        <div class="empresa-column">
-                            <?php for ($i = $halfCount; $i < count($empresas_servicos); $i++): ?>
-                                <?php $empresa = $empresas_servicos[$i]; ?>
-                                <h2 class="empresa-name">Empresa: <?php echo $empresa['nome_empresa']; ?></h2>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Serviço Extra</th>
-                                            <th>Valor</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($servicos as $servico): ?>
-                                            <tr>
-                                                <td><?php echo $servico; ?></td>
-                                                <td>
-                                                    <input type="text" name="valores[<?php echo $empresa['id_empresa']; ?>][<?php echo $servico; ?>]" placeholder="Valor">
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endfor; ?>
-                        </div>
-                        <div style="clear: both;"></div>
+if (isset($_POST['submit_cliente'])) {
+    $cliente_selecionado = $_POST['cliente_selecionado'];
+    
+    $empresas_servicos_stmt = $pdo->prepare("SELECT id_empresa, nome AS nome_empresa FROM relacional.empresa WHERE id_cliente = ?");
+    $empresas_servicos_stmt->execute([$cliente_selecionado]);
+    $empresas_servicos = $empresas_servicos_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                        <h2>Selecione a Data:</h2>
-                        <select name="data_selecionada">
-                            <?php foreach ($datas as $data): ?>
-                                <option value="<?php echo $data['id']; ?>"><?php echo $data['mes'] . "/" . $data['ano']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <br>
-                        <div class="button-container">
-                            <button class="submit-button" type="submit" name="submit_servicos">Enviar Serviços Extras</button>
-                        </div>
-                    </form>
-                <?php endif; ?>
-            </div>
-        </div>
+    $servicos_stmt = $pdo->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'servico_extra' AND column_name NOT IN ('cod_serv_extra', 'id_empresa', 'id_data')");
+    $servicos = $servicos_stmt->fetchAll(PDO::FETCH_COLUMN);
+    $servicos = array_unique($servicos);
+}
+
+$datas = $pdo->query("SELECT id, mes, ano FROM relacional.datas")->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+<div class="page-container">
+    <h1 class="title">SERVIÇOS EXTRAS</h1>
+
+    <div class="form-container">
+        <form method="post" action="">
+            <label for="cliente">Selecione o Cliente:</label>
+            <select id="cliente" name="cliente_selecionado">
+                <?php foreach ($clientes as $cliente): ?>
+                    <option value="<?php echo $cliente['id_cliente']; ?>"><?php echo $cliente['nome']; ?></option>
+                <?php endforeach; ?>
+            </select>
+            <button class="submit-button" type="submit" name="submit_cliente">Selecionar</button>
+        </form>
+
+        <?php if (!empty($empresas_servicos)): ?>
+            <form method="post" action="inserir_dados_extras.php">
+                <?php foreach ($empresas_servicos as $empresa): ?>
+                    <div class="empresa-column">
+                        <h2 class="empresa-name">Empresa: <?php echo $empresa['nome_empresa']; ?></h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Serviço Extra</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($servicos as $servico): ?>
+                                    <tr>
+                                        <td><?php echo $servico; ?></td>
+                                        <td>
+                                            <input type="text" name="valores[<?php echo $empresa['id_empresa']; ?>][<?php echo $servico; ?>]" placeholder="Valor">
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endforeach; ?>
+
+                <div style="clear: both;"></div>
+
+                <h2>Selecione a Data:</h2>
+                <select name="data_selecionada">
+                    <?php foreach ($datas as $data): ?>
+                        <option value="<?php echo $data['id']; ?>"><?php echo $data['mes'] . "/" . $data['ano']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+
+                <br>
+
+                <div class="button-container">
+                    <button class="submit-button" type="submit" name="submit_servicos">Enviar Serviços Extras</button>
+                </div>
+            </form>
+        <?php endif; ?>
+    </div>
+</div>
 </body>
 </html>
